@@ -1,0 +1,6 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+ com.laiye.grpc2json.config.GrpcServerGateWayConfig,\
+ com.laiye.grpc2json.config.GrpcClientGatewayConfig
+spring.autoconfigure.exclude=\
+ net.devh.boot.grpc.server.autoconfigure.GrpcServerAutoConfiguration\
+ net.devh.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration
