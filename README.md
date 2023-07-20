@@ -112,3 +112,7 @@ grpc:
 2. 通过固定规则进行请求转换。比如 /api/gateway/client/demo/hello/word 对应的规则为`${gateway.client.prefix}/${moduleName}/${ServiceName}/${methodName}`  
 3. 扫描相应的package获得相应的BlockingStubClass.并通过配置项获得Channel.动态的生成相应的BlockingStub。并生成相应的HttpServlet  
 4. 返回的数据写回到http请求中   
+
+### 问题
+假如出现了404的ERROR。但是根本就没有调用到这个Post服务
+确认下是不是加载了spring-security。这样需要禁用csrf服务
