@@ -2,9 +2,6 @@ package com.laiye.grpc2json.framework.server
 
 import com.google.gson.Gson
 import com.google.protobuf.GeneratedMessageV3
-import com.laiye.framework.common.exception.BaseCode
-import com.laiye.framework.common.exception.BusinessException
-import com.laiye.framework.common.exception.SystemCodeEnum
 import com.laiye.grpc2json.config.GrpcGateWayCommonConfig
 import com.laiye.grpc2json.framework.convertToMessage
 import com.laiye.grpc2json.framework.quickToErrorMsg
@@ -61,7 +58,7 @@ open class GrpcDispatchServlet(val context: ApplicationContext, val config: Grpc
 
 
     override fun doGet(req: HttpServletRequest?, resp: HttpServletResponse?) {
-        throw BusinessException(SystemCodeEnum.GRPC_GATEWAY_METHOD_NOT_SUPPORT);
+        throw IllegalArgumentException("不支持Get请求")
     }
 
 
@@ -71,7 +68,7 @@ open class GrpcDispatchServlet(val context: ApplicationContext, val config: Grpc
         try {
             val urls = req.pathInfo.replaceFirst("/", "").split("/")
             if (urls.size <= 1) {
-                throw BusinessException(SystemCodeEnum.GRPC_GATEWAY_REQUEST_URL_ERROR)
+                throw IllegalArgumentException("请求没有按照规则")
             }
             var serviceName = urls[0].toLowerCase()
             var methodName = urls[1].toLowerCase()
@@ -99,25 +96,15 @@ open class GrpcDispatchServlet(val context: ApplicationContext, val config: Grpc
             val method = service!!::class.java!!.declaredMethods!!.filter { it ->
                 it.name.equals(methodName, ignoreCase = true)
             }.getOrNull(0)
-                ?: throw BusinessException(SystemCodeEnum.GRPC_GATEWAY_REQUEST_SERVICE_NOT_FOUND)
+                ?: throw IllegalArgumentException("没有找到相应的Grpc:Method方法:"+methodName)
 
 
             val requestType =
                 method.parameterTypes[0] as Class<out GeneratedMessageV3> ?: GeneratedMessageV3::class.java
+
             val request = convertToMessage(requestType, requestJson, getJsonInterceptors(context))
             if (!request.first) {
-                throw BusinessException(object :BaseCode{
-                    override fun getCode(): Int {
-                        return SystemCodeEnum.GRPC_GATEWAY_REQUEST_BODY_ERROR.code
-                    }
-                    override fun getMessage(): String {
-                       return SystemCodeEnum.GRPC_GATEWAY_REQUEST_BODY_ERROR.message
-                    }
-
-                    override fun getDebugMsg(): String {
-                        return request.second;
-                    }
-                })
+                throw IllegalArgumentException("无法转换请求到Grpc请求")
             }
             method.invoke(service, request.third, GrpcMockObserver(httpRequest, httpResponse, config,getJsonInterceptors(context)))
         } catch (e: Exception) {

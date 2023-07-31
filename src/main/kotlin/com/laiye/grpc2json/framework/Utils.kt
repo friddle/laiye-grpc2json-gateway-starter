@@ -5,8 +5,6 @@ import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Message
 import com.google.protobuf.TypeRegistry
 import com.google.protobuf.util.JsonFormat
-import com.laiye.framework.common.exception.BusinessException
-import com.laiye.framework.common.model.Result
 import com.laiye.grpc2json.framework.server.toGsonString
 import com.laiye.grpc2json.interceptor.IGrpcGateWayJsonInterceptor
 import io.grpc.StatusRuntimeException
@@ -79,13 +77,13 @@ fun quickToErrorMsg(
     jsonBody: String
 ) {
     log.error("错误调用:${req.pathInfo}\r${jsonBody}", e);
-    if (e is BusinessException) {
-        writeError(Result.failed<Any>(e.error), resp)
+    if (e is IllegalArgumentException) {
+        writeError(Result.failure<Any>(e), resp)
         return
     }
-    if(e.cause!=null&&e.cause is BusinessException){
-        val cause=e.cause as BusinessException;
-        writeError(Result.failed<Any>(cause.error), resp)
+    if(e.cause!=null&&e.cause is IllegalArgumentException){
+        val cause=e.cause as IllegalArgumentException;
+        writeError(Result.failure<Any>(cause), resp)
         return
     }
     throw e;
