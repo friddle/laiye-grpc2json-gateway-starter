@@ -1,8 +1,6 @@
 package com.laiye.grpc2json.interceptor
 
 import com.google.gson.Gson
-import com.laiye.framework.common.util.HeaderKeys
-import com.laiye.framework.common.util.HeaderKeys.AUTH_MEMBER_KEY
 import io.grpc.Metadata
 import io.grpc.ServerCall
 import io.grpc.ServerCallHandler
@@ -16,9 +14,9 @@ open class GrpcHeadServerAuthInterceptor : ServerInterceptor {
     val gson = Gson();
 
     open fun setAuth(metadata: Metadata) {
-        if (metadata.keys().contains(AUTH_MEMBER_KEY)) {
+        if (metadata.keys().contains("AUTH_MEMBER_INFO")) {
             val context = SecurityContextHolder.getContext();
-            val key = Metadata.Key.of(HeaderKeys.AUTH_MEMBER_KEY, Metadata.BINARY_BYTE_MARSHALLER)
+            val key = Metadata.Key.of("AUTH_MEMBER_INFO", Metadata.BINARY_BYTE_MARSHALLER)
             val data = String(metadata.get(key) as ByteArray);
             context.authentication = gson.fromJson(data, Authentication::class.java);
         }

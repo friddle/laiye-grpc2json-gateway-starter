@@ -3,18 +3,16 @@ package com.laiye.grpc2json.framework
 import com.google.gson.Gson
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Message
-import com.google.protobuf.TypeRegistry
 import com.google.protobuf.util.JsonFormat
 import com.laiye.grpc2json.framework.server.toGsonString
 import com.laiye.grpc2json.interceptor.IGrpcGateWayJsonInterceptor
-import io.grpc.StatusRuntimeException
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
 import java.nio.charset.Charset
 import java.util.regex.Pattern
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 val log = LoggerFactory.getLogger("grpc_gateway_framework")
 val gson = Gson();

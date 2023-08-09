@@ -1,6 +1,5 @@
 package com.laiye.grpc2json.interceptor
 
-import com.laiye.framework.common.util.HeaderKeys
 import io.grpc.Metadata
 import io.grpc.ServerCall
 import io.grpc.ServerCallHandler
@@ -29,7 +28,7 @@ open class GrpcOAuthServerAuthInterceptor(tokenIntrospector: NimbusOpaqueTokenIn
         next: ServerCallHandler<ReqT, RespT>
     ): ServerCall.Listener<ReqT> {
         val authHeader: String =
-            headers.get(Metadata.Key.of(HeaderKeys.AUTHORIZAITON_KEY, Metadata.ASCII_STRING_MARSHALLER)) ?: ""
+            headers.get(Metadata.Key.of("Bearer Token", Metadata.ASCII_STRING_MARSHALLER)) ?: ""
         if (!(authHeader.startsWith("Bearer ") || authHeader.startsWith("bearer "))) {
             return next.startCall(call, headers)
         }

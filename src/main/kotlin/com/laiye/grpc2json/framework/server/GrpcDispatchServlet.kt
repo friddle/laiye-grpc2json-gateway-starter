@@ -8,14 +8,14 @@ import com.laiye.grpc2json.framework.quickToErrorMsg
 import com.laiye.grpc2json.interceptor.IGrpcGateWayJsonInterceptor
 import com.laiye.grpc2json.interceptor.annotations.GrpcServerGateWayJsonInterceptor
 import io.grpc.BindableService
+import jakarta.servlet.http.HttpServlet
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import net.devh.boot.grpc.server.service.GrpcService
 import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.core.env.Environment
-import javax.servlet.http.HttpServlet
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 var gson = Gson()
 inline fun Any.toGsonString(): String {

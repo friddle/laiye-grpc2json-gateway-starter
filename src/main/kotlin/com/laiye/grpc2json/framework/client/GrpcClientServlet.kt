@@ -1,8 +1,6 @@
 package com.laiye.grpc2json.framework.client
 
 import com.google.protobuf.GeneratedMessageV3
-import com.laiye.framework.common.exception.BusinessException
-import com.laiye.framework.common.exception.SystemCodeEnum
 import com.laiye.grpc2json.config.GrpcGateWayCommonConfig
 import com.laiye.grpc2json.config.data.GrpcChannelGatewayProperties
 import com.laiye.grpc2json.framework.convertToMessage
@@ -10,17 +8,15 @@ import com.laiye.grpc2json.framework.outputRsp
 import com.laiye.grpc2json.framework.quickToErrorMsg
 import com.laiye.grpc2json.interceptor.IGrpcGateWayJsonInterceptor
 import com.laiye.grpc2json.interceptor.annotations.GrpcClientGateWayJsonInterceptor
-import com.laiye.grpc2json.interceptor.annotations.GrpcServerGateWayJsonInterceptor
-import io.grpc.stub.AbstractBlockingStub
 import io.grpc.stub.AbstractStub
+import jakarta.servlet.http.HttpServlet
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.core.env.Environment
 import java.lang.reflect.Method
-import javax.servlet.http.HttpServlet
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 open class GrpcClientServlet(
     context: ApplicationContext,
@@ -80,7 +76,7 @@ open class GrpcClientServlet(
         try {
             val urls = req.pathInfo.replaceFirst("/", "").split("/")
             if (urls.size < 3) {
-                throw BusinessException(SystemCodeEnum.GRPC_GATEWAY_REQUEST_BODY_ERROR)
+                throw java.lang.IllegalArgumentException("Grpc not fit rules"+urls)
             }
             var groupName = urls[0].toLowerCase()
             var serviceName = urls[1].toLowerCase()
@@ -102,14 +98,14 @@ open class GrpcClientServlet(
         rsp: HttpServletResponse
     ) {
         val client =
-            getGrpcClients().get(groupName)?.get(serviceName) ?: throw BusinessException(SystemCodeEnum.GRPC_GATEWAY_REQUEST_BODY_ERROR)
+            getGrpcClients().get(groupName)?.get(serviceName) ?: throw IllegalArgumentException("请求Body出问题")
         val method: Method = client.javaClass?.declaredMethods?.filter {
             it.name.equals(methodName, ignoreCase = true)
         }?.firstOrNull() ?: throw IllegalArgumentException("api not found:${groupName} ${serviceName}/${methodName}")
         val requestType = method.parameterTypes[0] as Class<out GeneratedMessageV3> ?: GeneratedMessageV3::class.java
         val request = convertToMessage(requestType, requestJson)
         if (!request.first) {
-            throw BusinessException(SystemCodeEnum.GRPC_GATEWAY_REQUEST_BODY_ERROR)
+            throw IllegalArgumentException("请求Body出问题")
         }
         val invokeRsp = method.invoke(client, request.third) as GeneratedMessageV3
         return writeRsp(rsp, invokeRsp)

@@ -5,10 +5,10 @@ import com.laiye.grpc2json.config.GrpcGateWayCommonConfig
 import com.laiye.grpc2json.framework.outputRsp
 import com.laiye.grpc2json.interceptor.IGrpcGateWayJsonInterceptor
 import io.grpc.stub.StreamObserver
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
 import java.io.IOException
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 
 class GrpcMockObserver(

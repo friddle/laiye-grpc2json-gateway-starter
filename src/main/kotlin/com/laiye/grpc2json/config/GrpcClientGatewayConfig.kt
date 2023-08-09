@@ -1,6 +1,5 @@
 package com.laiye.grpc2json.config
 
-import com.laiye.framework.common.exception.DefaultExceptionAdvice
 import com.laiye.grpc2json.config.data.GrpcChannelGatewayProperties
 import com.laiye.grpc2json.framework.client.GrpcClientServlet
 import net.devh.boot.grpc.client.config.GrpcChannelsProperties
@@ -32,28 +31,4 @@ open class GrpcClientGatewayConfig {
     @Value("\${grpc.gateway.client.output:rest}")
     var outputType: GrpcGatewayOutputType = GrpcGatewayOutputType.rest
 
-    @Bean
-    open fun registry(@Autowired context: ApplicationContext): ServletRegistrationBean<*> {
-        val registrationBean: ServletRegistrationBean<Servlet> = ServletRegistrationBean<Servlet>(
-            GrpcClientServlet(
-                context,
-                client,
-                GrpcGateWayCommonConfig(outputType = outputType)
-            )
-        )
-        log.info("register ${prefix} to grpc client gateway and ${client.keys.joinToString(",")}")
-        registrationBean.addUrlMappings(prefix)
-        return registrationBean
-    }
-
-    @Bean
-    @ConditionalOnBean(DefaultExceptionAdvice::class)
-    open fun grpcClientFilter(advice: DefaultExceptionAdvice): FilterRegistrationBean<GrpcCustomErrorFilter> {
-        val errorFilter = GrpcCustomErrorFilter(advice);
-        val filterRegBean: FilterRegistrationBean<GrpcCustomErrorFilter> = FilterRegistrationBean<GrpcCustomErrorFilter>()
-        filterRegBean.addUrlPatterns(prefix);
-        filterRegBean.filter = errorFilter;
-        filterRegBean.order = 1
-        return filterRegBean
-    }
 }
