@@ -33,6 +33,8 @@ open class GrpcDispatchServlet(val context: ApplicationContext, val config: Grpc
         getJsonInterceptors(context)
     }
 
+
+
     fun getJsonInterceptors(context: ApplicationContext): List<IGrpcGateWayJsonInterceptor> {
         if(jsonInterceptors.isEmpty()){
             jsonInterceptors = context.getBeansWithAnnotation(GrpcServerGateWayJsonInterceptor::class.java).values.map { it as IGrpcGateWayJsonInterceptor }
